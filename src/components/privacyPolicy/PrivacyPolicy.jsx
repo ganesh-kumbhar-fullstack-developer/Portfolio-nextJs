@@ -98,15 +98,15 @@ export default function PrivacyPolicy() {
   ];
 
   return (
-    <main id="main" className="relative min-h-screen pt-16 text-white">
+    <main id="main" className="relative min-h-screen pt-14 text-white">
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="sticky top-16 z-20 border-b border-line bg-bg/85 backdrop-blur-md">
+        <div className="sticky top-14 z-20 border-b border-line bg-bg/85 backdrop-blur-md">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
             <Link
               href="/"
-              className="flex items-center gap-2 text-purple-400 hover:text-purple-300 transition"
+              className="flex items-center gap-2 text-accent hover:text-ink font-mono text-sm transition"
             >
               <ArrowLeft size={20} />
               <span>Back to Home</span>
@@ -119,14 +119,14 @@ export default function PrivacyPolicy() {
           {/* Title Section */}
           <div className="mb-12 text-center">
             <div className="flex justify-center mb-4">
-              <div className="bg-purple-500/20 p-3 rounded-full">
-                <Shield className="w-8 h-8 text-purple-400" />
+              <div className="bg-accent/10 p-3 rounded-full">
+                <Shield className="w-8 h-8 text-accent" />
               </div>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-linear-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4 font-mono text-white">
               Privacy Policy
             </h1>
-            <p className="text-gray-400">
+            <p className="text-muted">
               Last Updated:{" "}
               October 3, 2026
             </p>
@@ -137,14 +137,14 @@ export default function PrivacyPolicy() {
             {sections.map((section, index) => (
               <div
                 key={index}
-                className="bg-gray-900/50 border border-purple-500/20 rounded-lg p-6 hover:border-purple-500/40 transition"
+                className="panel panel-hover p-6 transition"
               >
-                <h2 className="text-2xl font-bold text-purple-400 mb-4">
+                <h2 className="font-mono text-xl font-bold text-accent mb-4">
                   {section.title}
                 </h2>
 
                 {section.content && (
-                  <p className="text-gray-300 leading-relaxed mb-4">
+                  <p className="text-ink/90 leading-relaxed mb-4">
                     {section.content}
                   </p>
                 )}
@@ -154,12 +154,12 @@ export default function PrivacyPolicy() {
                     {section.subsections.map((subsection, subIndex) => (
                       <div
                         key={subIndex}
-                        className="ml-4 border-l-2 border-purple-500/30 pl-4"
+                        className="ml-4 border-l-2 border-accent/30 pl-4"
                       >
-                        <h3 className="text-lg font-semibold text-purple-300 mb-2">
+                        <h3 className="text-lg font-semibold text-cyan mb-2">
                           {subsection.subtitle}
                         </h3>
-                        <p className="text-gray-400 leading-relaxed">
+                        <p className="text-muted leading-relaxed">
                           {subsection.content}
                         </p>
                       </div>

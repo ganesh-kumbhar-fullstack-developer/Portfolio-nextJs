@@ -17,20 +17,20 @@ export default function OpengraphImage() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "72px",
-          background: "radial-gradient(circle at 85% 0%, #2a1d63 0%, #07060b 55%)",
-          color: "#ecebf3",
-          fontFamily: "sans-serif",
+          background: "radial-gradient(circle at 85% 0%, #0d3b27 0%, #05070a 55%)",
+          color: "#dbe7ef",
+          fontFamily: "monospace",
         }}
       >
-        <div style={{ display: "flex", fontSize: 26, color: "#b9a6ff", letterSpacing: 4 }}>GKTECHHUB.COM</div>
+        <div style={{ display: "flex", fontSize: 26, color: "#3dfc9a", letterSpacing: 4 }}>GKTECHHUB.COM</div>
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div style={{ fontSize: 84, fontWeight: 700, color: "#ffffff" }}>{profile.name}</div>
-          <div style={{ display: "flex", fontSize: 40, marginTop: 12, color: "#b9a6ff" }}>
+          <div style={{ display: "flex", fontSize: 40, marginTop: 12, color: "#3dfc9a" }}>
             {`${profile.title} · ${profile.focus}`}
           </div>
-          <div style={{ fontSize: 28, marginTop: 28, color: "#a19db3" }}>{profile.stack}</div>
+          <div style={{ fontSize: 28, marginTop: 28, color: "#8798a8" }}>{profile.stack}</div>
         </div>
-        <div style={{ display: "flex", fontSize: 24, color: "#a19db3" }}>{profile.location}</div>
+        <div style={{ display: "flex", fontSize: 24, color: "#8798a8" }}>{profile.location}</div>
       </div>
     ),
     size,

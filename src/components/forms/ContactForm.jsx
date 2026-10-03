@@ -1,30 +1,33 @@
 "use client";
+import { useState } from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import axios from "axios";
 import { toast } from "react-toastify";
-import { Send, Loader2 } from "lucide-react";
 
 const validationSchema = Yup.object({
-  fullName: Yup.string().trim().min(2, "Please enter your name").max(80, "Name is too long").required("Name is required"),
-  email: Yup.string().trim().email("Enter a valid email address").required("Email is required"),
-  subject: Yup.string().trim().max(120, "Subject is too long"),
+  fullName: Yup.string().trim().min(2, "name: too short").max(80, "name: too long").required("name: required"),
+  email: Yup.string().trim().email("email: invalid address").required("email: required"),
+  subject: Yup.string().trim().max(120, "subject: too long"),
   msg: Yup.string()
     .trim()
-    .min(10, "Message should be at least 10 characters")
-    .max(2000, "Message should be under 2000 characters")
-    .required("Message is required"),
+    .min(10, "message: at least 10 characters")
+    .max(2000, "message: under 2000 characters")
+    .required("message: required"),
 });
 
-function Field({ formik, name, label, optional, as = "input", className = "", ...props }) {
+const STEPS = ["validating input", "opening smtp connection", "encrypting payload (TLS)", "delivering message"];
+
+function Field({ formik, name, label, optional, as = "input", ...props }) {
   const Tag = as;
   const error = formik.touched[name] && formik.errors[name];
   const id = `contact-${name}`;
   return (
     <div>
-      <label htmlFor={id} className="mb-1.5 block text-sm text-muted">
-        {label}
-        {optional && <span className="text-subtle"> (optional)</span>}
+      <label htmlFor={id} className="flex items-baseline gap-2 font-mono text-xs">
+        <span className="text-accent">?</span>
+        <span className="text-ink">{label}</span>
+        {optional && <span className="text-subtle">(optional)</span>}
       </label>
       <Tag
         id={id}
@@ -35,12 +38,12 @@ function Field({ formik, name, label, optional, as = "input", className = "", ..
         disabled={formik.isSubmitting}
         aria-invalid={error ? "true" : undefined}
         aria-describedby={error ? `${id}-error` : undefined}
-        className={`field ${className} ${error ? "border-red-400/70" : ""}`}
+        className={`field ${error ? "border-danger/70" : ""} ${as === "textarea" ? "resize-y" : ""}`}
         {...props}
       />
       {error && (
-        <p id={`${id}-error`} className="mt-1.5 text-xs text-red-400">
-          {error}
+        <p id={`${id}-error`} className="mt-1.5 font-mono text-[11px] text-danger">
+          ✗ {error}
         </p>
       )}
     </div>
@@ -48,68 +51,89 @@ function Field({ formik, name, label, optional, as = "input", className = "", ..
 }
 
 export default function ContactForm() {
+  const [log, setLog] = useState([]);
+
   const formik = useFormik({
     initialValues: { fullName: "", email: "", subject: "", msg: "", website: "" },
     validationSchema,
     onSubmit: async (values, { resetForm }) => {
+      setLog([]);
+      // Show progress lines while the request is in flight
+      const timers = STEPS.map((step, i) => setTimeout(() => setLog((l) => [...l, { text: step, ok: true }]), i * 350));
       try {
-        await axios.post("/api/contact", values, { timeout: 15000 });
-        toast.success("Thanks! Your message is on its way — I'll get back to you soon.");
+        await Promise.all([
+          axios.post("/api/contact", values, { timeout: 15000 }),
+          new Promise((r) => setTimeout(r, STEPS.length * 350)),
+        ]);
+        setLog((l) => [...l, { text: "message delivered · exit 0", ok: true, done: true }]);
+        toast.success("Message delivered. I'll get back to you soon!");
         resetForm();
       } catch (error) {
-        toast.error(
-          error.response?.data?.error ||
-            `Something went wrong. You can also email me directly at ganeshhh2003@gmail.com.`,
-        );
+        timers.forEach(clearTimeout);
+        setLog((l) => [...l, { text: "delivery failed · exit 1", ok: false, done: true }]);
+        toast.error(error.response?.data?.error || "Something went wrong. Email me at ganeshhh2003@gmail.com.");
       }
     },
   });
 
   return (
-    <form onSubmit={formik.handleSubmit} noValidate className="card space-y-5 p-6 sm:p-8">
-      <div className="grid gap-5 sm:grid-cols-2">
-        <Field formik={formik} name="fullName" label="Name" autoComplete="name" placeholder="Your name" />
+    <form onSubmit={formik.handleSubmit} noValidate className="window relative">
+      <div className="window-bar">
+        <span className="dots" aria-hidden>
+          <i />
+          <i />
+          <i />
+        </span>
+        <span>bash — send_message.sh</span>
+      </div>
+
+      <div className="space-y-6 p-5 sm:p-7">
+        <p className="font-mono text-xs text-subtle">
+          <span className="text-accent">guest@ganesh-os</span>:<span className="text-cyan">~</span>$ ./send_message.sh
+          --interactive
+        </p>
+
+        <div className="grid gap-6 sm:grid-cols-2">
+          <Field formik={formik} name="fullName" label="your name" autoComplete="name" placeholder="Ada Lovelace" />
+          <Field formik={formik} name="email" label="your email" type="email" autoComplete="email" placeholder="ada@company.com" />
+        </div>
+        <Field formik={formik} name="subject" label="subject" optional placeholder="backend role / project / just saying hi" />
         <Field
           formik={formik}
-          name="email"
-          label="Email"
-          type="email"
-          autoComplete="email"
-          placeholder="you@company.com"
+          as="textarea"
+          name="msg"
+          label="message"
+          rows={4}
+          placeholder="Tell me what you're building…"
         />
-      </div>
-      <Field formik={formik} name="subject" label="Subject" optional placeholder="Role, project or just hello" />
-      <Field
-        formik={formik}
-        as="textarea"
-        name="msg"
-        label="Message"
-        rows={5}
-        placeholder="Tell me a bit about what you're working on…"
-        className="resize-y"
-      />
 
-      {/* Honeypot: hidden from people, bots tend to fill it in */}
-      <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-        <label>
-          Website
-          <input type="text" name="website" tabIndex={-1} autoComplete="off" value={formik.values.website} onChange={formik.handleChange} />
-        </label>
-      </div>
+        {/* Honeypot: hidden from people, bots tend to fill it in */}
+        <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
+          <label>
+            Website
+            <input type="text" name="website" tabIndex={-1} autoComplete="off" value={formik.values.website} onChange={formik.handleChange} />
+          </label>
+        </div>
 
-      <button type="submit" disabled={formik.isSubmitting} className="btn btn-primary w-full sm:w-auto">
-        {formik.isSubmitting ? (
-          <>
-            <Loader2 className="h-4 w-4 animate-spin" aria-hidden />
-            Sending…
-          </>
-        ) : (
-          <>
-            <Send className="h-4 w-4" aria-hidden />
-            Send message
-          </>
+        {log.length > 0 && (
+          <div className="rounded-lg border border-line bg-bg/70 p-3 font-mono text-xs leading-6" role="status">
+            {log.map((l, i) => (
+              <p key={i} className={l.done ? (l.ok ? "text-accent" : "text-danger") : "text-muted"}>
+                {l.done ? (l.ok ? "✓ " : "✗ ") : "→ "}
+                {l.text}
+                {!l.done && <span className="text-accent"> ok</span>}
+              </p>
+            ))}
+          </div>
         )}
-      </button>
+
+        <div className="flex flex-wrap items-center gap-4">
+          <button type="submit" disabled={formik.isSubmitting} className="btn btn-primary">
+            {formik.isSubmitting ? "executing…" : "execute ⏎"}
+          </button>
+          <span className="font-mono text-[11px] text-subtle">replies land in your inbox, usually within 24h</span>
+        </div>
+      </div>
     </form>
   );
 }

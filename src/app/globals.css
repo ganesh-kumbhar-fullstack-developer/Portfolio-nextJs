@@ -1,130 +1,262 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
 
-/* ---------- Design tokens (usable as Tailwind utilities: bg-surface, text-muted, …) ---------- */
+/* ============================================================
+   Ganesh OS — design tokens
+   Usable as utilities: bg-surface, text-accent, border-line …
+   ============================================================ */
 @theme {
-  --color-brand: #8b6cff;
-  --color-brand-strong: #754ef9;
-  --color-brand-soft: #b9a6ff;
-  --color-bg: #07060b;
-  --color-surface: #0f0d16;
-  --color-surface-2: #16131f;
-  --color-line: #262236;
-  --color-ink: #ecebf3;
-  --color-muted: #a19db3;
-  --color-subtle: #6f6a84;
-  --color-ok: #34d399;
+  --color-bg: #05070a;
+  --color-surface: #0a0e13;
+  --color-surface-2: #0f151c;
+  --color-line: #1a2430;
+  --color-line-2: #243241;
+  --color-ink: #dbe7ef;
+  --color-muted: #8798a8;
+  --color-subtle: #546372;
 
-  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  --color-accent: #3dfc9a; /* phosphor green */
+  --color-accent-dim: #1fa565;
+  --color-cyan: #5cd6ff;
+  --color-amber: #ffb454;
+  --color-danger: #ff5c7a;
+  --color-violet: #b69cff;
 
-  --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+  --animate-blink: blink 1.05s steps(1) infinite;
+  --animate-fade-up: fade-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@theme inline {
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  50.01%, 100% { opacity: 0; }
 }
 
 @keyframes fade-up {
-  from {
-    opacity: 0;
-    transform: translateY(16px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
+  from { opacity: 0; transform: translateY(18px); }
+  to { opacity: 1; transform: none; }
 }
 
-/* ---------- Base ---------- */
+/* A packet travelling along a pipeline connector */
+@keyframes packet {
+  0% { transform: translateX(-4px); opacity: 0; }
+  15%, 85% { opacity: 1; }
+  100% { transform: translateX(calc(var(--len, 28px) - 2px)); opacity: 0; }
+}
+
+@keyframes marquee {
+  to { transform: translateX(-50%); }
+}
+
+@keyframes glitch-a {
+  0%, 100% { clip-path: inset(0 0 85% 0); transform: translate(-3px, -1px); }
+  25% { clip-path: inset(40% 0 35% 0); transform: translate(3px, 1px); }
+  50% { clip-path: inset(75% 0 5% 0); transform: translate(-2px, 2px); }
+  75% { clip-path: inset(15% 0 60% 0); transform: translate(2px, -2px); }
+}
+
+@keyframes glitch-b {
+  0%, 100% { clip-path: inset(70% 0 10% 0); transform: translate(3px, 1px); }
+  33% { clip-path: inset(10% 0 70% 0); transform: translate(-3px, -1px); }
+  66% { clip-path: inset(45% 0 30% 0); transform: translate(2px, 2px); }
+}
+
+/* Boot screen: lines appear, then the overlay fades away (pure CSS — JS only skips it) */
+@keyframes boot-line {
+  to { opacity: 1; }
+}
+
+@keyframes boot-bar {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes boot-out {
+  to { opacity: 0; visibility: hidden; }
+}
+
+@keyframes pulse-ring {
+  0% { box-shadow: 0 0 0 0 rgb(61 252 154 / 0.55); }
+  100% { box-shadow: 0 0 0 9px rgb(61 252 154 / 0); }
+}
+
+/* ============================================================
+   Base
+   ============================================================ */
 @layer base {
   html {
     scroll-behavior: smooth;
+    scrollbar-gutter: stable;
     color-scheme: dark;
     -webkit-text-size-adjust: 100%;
   }
 
   body {
-    @apply bg-bg text-ink font-sans antialiased;
-    /* Single, static page-wide glow instead of per-section animated backgrounds */
-    background-image:
-      radial-gradient(60rem 40rem at 85% -10%, rgb(117 78 249 / 0.14), transparent 60%),
-      radial-gradient(50rem 35rem at -10% 30%, rgb(117 78 249 / 0.08), transparent 60%);
-    background-attachment: fixed;
-    background-repeat: no-repeat;
+    @apply bg-bg font-sans text-ink antialiased;
   }
 
-  /* Anchor targets clear the fixed navbar */
   section[id] {
-    scroll-margin-top: 5rem;
+    scroll-margin-top: 4.5rem;
   }
 
   ::selection {
-    background: rgb(117 78 249 / 0.45);
+    background: rgb(61 252 154 / 0.3);
     color: #fff;
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-brand);
+    outline: 2px solid var(--color-accent);
     outline-offset: 3px;
-    border-radius: 6px;
+    border-radius: 4px;
   }
 }
 
-/* ---------- Components ---------- */
+/* ============================================================
+   Components
+   ============================================================ */
 @layer components {
   .container-page {
     @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
   }
 
   .section {
-    @apply py-20 sm:py-28;
+    @apply relative py-24 sm:py-32;
   }
 
-  .eyebrow {
-    @apply font-mono text-xs uppercase tracking-[0.2em] text-brand;
+  /* Window chrome used by terminals, editors and panels */
+  .window {
+    @apply overflow-hidden rounded-xl border border-line bg-surface/85 shadow-[0_30px_80px_-30px_rgb(0_0_0/0.8)] backdrop-blur-sm;
   }
 
-  .section-title {
-    @apply mt-3 text-3xl font-semibold tracking-tight text-white text-balance sm:text-4xl;
+  .window-bar {
+    @apply flex items-center gap-3 border-b border-line bg-surface-2/80 px-4 py-2.5 font-mono text-xs text-subtle;
   }
 
-  .card {
-    @apply rounded-2xl border border-line bg-surface/70 transition-colors duration-200;
+  .dots {
+    @apply flex shrink-0 gap-1.5;
   }
 
-  .card-hover {
-    @apply hover:border-brand/40 hover:bg-surface-2/80;
+  .dots > i {
+    @apply block h-2.5 w-2.5 rounded-full;
+  }
+
+  .dots > i:nth-child(1) { background: #ff5f57; }
+  .dots > i:nth-child(2) { background: #febc2e; }
+  .dots > i:nth-child(3) { background: #28c840; }
+
+  .panel {
+    @apply rounded-xl border border-line bg-surface/70 transition-[border-color,background-color,box-shadow] duration-300;
+  }
+
+  .panel-hover {
+    @apply hover:border-accent/35 hover:bg-surface-2/80 hover:shadow-[0_20px_60px_-30px_rgb(61_252_154/0.35)];
   }
 
   .chip {
-    @apply inline-flex items-center rounded-full border border-line bg-surface-2/60 px-3 py-1 text-xs text-muted;
+    @apply inline-flex items-center rounded-md border border-line bg-surface-2/70 px-2 py-1 font-mono text-[11px] text-muted transition-colors;
   }
 
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-medium transition-[background-color,border-color,color,transform] duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60;
+    @apply relative inline-flex items-center justify-center gap-2 rounded-lg px-5 py-3 font-mono text-sm transition-[background-color,border-color,color,box-shadow,transform] duration-200 active:scale-[0.97] disabled:pointer-events-none disabled:opacity-60;
   }
 
   .btn-primary {
-    @apply bg-brand-strong text-white hover:bg-brand;
+    @apply bg-accent font-semibold text-bg hover:shadow-[0_0_30px_-4px_rgb(61_252_154/0.7)];
   }
 
   .btn-ghost {
-    @apply border border-line bg-white/3 text-ink hover:border-brand/50 hover:bg-white/6;
+    @apply border border-line-2 bg-surface/60 text-ink hover:border-accent/60 hover:text-accent;
   }
 
-  .link {
-    @apply text-brand-soft underline decoration-brand/40 underline-offset-4 transition-colors hover:text-white hover:decoration-brand;
+  .prompt {
+    @apply font-mono text-xs text-subtle sm:text-sm;
+  }
+
+  .glow {
+    text-shadow:
+      0 0 18px rgb(61 252 154 / 0.45),
+      0 0 2px rgb(61 252 154 / 0.6);
   }
 
   .field {
-    @apply w-full rounded-xl border border-line bg-surface-2/70 px-4 py-3 text-sm text-ink placeholder:text-subtle transition-colors focus:border-brand focus:outline-none;
+    @apply w-full border-0 border-b border-line-2 bg-transparent px-0 py-2 font-mono text-base text-ink sm:text-sm caret-accent placeholder:text-subtle transition-colors focus:border-accent focus:outline-none;
   }
 
-  /* Scroll reveal — toggled by <Reveal>. Only hides content once JS has run
-     (layout adds .js to <html>), so crawlers and no-JS visitors see everything. */
+  .cursor {
+    @apply ml-0.5 inline-block h-[1.05em] w-[0.55em] translate-y-[0.15em] animate-blink bg-accent;
+  }
+
+  /* Colour-split glitch on hover — reads text from data-text */
+  .glitch {
+    position: relative;
+  }
+
+  .glitch::before,
+  .glitch::after {
+    content: attr(data-text);
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .glitch::before { color: var(--color-cyan); }
+  .glitch::after { color: var(--color-danger); }
+
+  .glitch:hover::before {
+    opacity: 0.8;
+    animation: glitch-a 0.35s steps(2) infinite;
+  }
+
+  .glitch:hover::after {
+    opacity: 0.8;
+    animation: glitch-b 0.4s steps(2) infinite;
+  }
+
+  /* Pipeline connector with a travelling packet */
+  .wire {
+    @apply relative inline-block h-px w-7 shrink-0 bg-line-2;
+    --len: 28px;
+  }
+
+  .wire::after {
+    content: "";
+    position: absolute;
+    top: -2px;
+    left: 0;
+    height: 5px;
+    width: 5px;
+    border-radius: 9999px;
+    background: var(--color-accent);
+    box-shadow: 0 0 8px var(--color-accent);
+    animation: packet 1.6s linear infinite;
+    animation-delay: var(--delay, 0s);
+  }
+
+  .marquee {
+    animation: marquee 45s linear infinite;
+  }
+
+  .marquee:hover {
+    animation-play-state: paused;
+  }
+
+  .live-dot {
+    @apply inline-block h-2 w-2 shrink-0 rounded-full bg-accent;
+    animation: pulse-ring 1.6s ease-out infinite;
+  }
+
+  /* Scroll reveal — only hides content once JS has run */
   .js .reveal {
     opacity: 0;
-    transform: translateY(16px);
+    transform: translateY(18px);
     transition:
-      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
-      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+      opacity 0.8s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.8s cubic-bezier(0.22, 1, 0.36, 1);
     transition-delay: var(--reveal-delay, 0ms);
   }
 
@@ -134,35 +266,92 @@
   }
 }
 
-/* ---------- Scrollbar ---------- */
+/* ============================================================
+   Ambient background layers (fixed, GPU-cheap)
+   ============================================================ */
+.bg-fx {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background:
+    radial-gradient(70rem 40rem at 80% -10%, rgb(61 252 154 / 0.07), transparent 60%),
+    radial-gradient(50rem 30rem at -10% 40%, rgb(92 214 255 / 0.05), transparent 60%),
+    var(--color-bg);
+}
+
+/* The grid itself is drawn on a canvas by <BackgroundFX> (lifts around the pointer) */
+
+/* CRT scanlines + vignette */
+.crt {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  pointer-events: none;
+  background:
+    repeating-linear-gradient(to bottom, rgb(255 255 255 / 0.016) 0 1px, transparent 1px 3px),
+    radial-gradient(ellipse at center, transparent 60%, rgb(0 0 0 / 0.4) 100%);
+}
+
+/* ============================================================
+   Boot screen
+   ============================================================ */
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-bg);
+  animation: boot-out 0.45s ease forwards;
+  animation-delay: 1.3s;
+}
+
+.boot-line {
+  opacity: 0;
+  animation: boot-line 0.01s linear forwards;
+  animation-delay: var(--d);
+}
+
+.boot-bar {
+  transform-origin: left;
+  transform: scaleX(0);
+  animation: boot-bar 0.7s cubic-bezier(0.65, 0, 0.35, 1) forwards;
+  animation-delay: 0.55s;
+}
+
+/* Skip when already booted this session, skipped by the user, or without JS */
+html.booted .boot,
+html:not(.js) .boot,
+.boot.is-skipped {
+  display: none;
+}
+
+/* ============================================================
+   Scrollbar / toasts
+   ============================================================ */
 html {
-  scrollbar-color: #3a3150 transparent;
+  scrollbar-color: #1f6b47 transparent;
   scrollbar-width: thin;
 }
 
-::-webkit-scrollbar {
-  width: 8px;
-}
+::-webkit-scrollbar { width: 8px; }
+::-webkit-scrollbar-thumb { background: #1f6b47; border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--color-accent); }
 
-::-webkit-scrollbar-thumb {
-  background: #3a3150;
-  border-radius: 8px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-brand-strong);
-}
-
-/* ---------- Toasts ---------- */
 .Toastify__toast {
-  border: 1px solid var(--color-line);
+  border: 1px solid var(--color-line-2);
   background: var(--color-surface-2) !important;
   color: var(--color-ink) !important;
-  border-radius: 12px !important;
-  font-family: var(--font-sans);
+  border-radius: 10px !important;
+  font-family: var(--font-mono);
+  font-size: 13px;
 }
 
-/* ---------- Accessibility: honour reduced-motion preferences ---------- */
+/* ============================================================
+   Reduced motion
+   ============================================================ */
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;
@@ -174,6 +363,12 @@ html {
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
+  }
+
+  .boot,
+  .wire::after,
+  .crt {
+    display: none;
   }
 
   .js .reveal {

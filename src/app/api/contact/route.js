@@ -31,6 +31,15 @@ export async function POST(req) {
       return Response.json({ error: "Please check the form fields and try again." }, { status: 400 });
     }
 
+    const missing = missingEmailConfig();
+    if (missing.length) {
+      console.error(`Contact API: email is not configured. Missing env vars: ${missing.join(", ")} (see .env.example)`);
+      return Response.json(
+        { error: "The contact form is temporarily unavailable. Please email ganeshhh2003@gmail.com directly." },
+        { status: 503 },
+      );
+    }
+
     const timestamp = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
     const safeName = escapeHtml(fullName);
 

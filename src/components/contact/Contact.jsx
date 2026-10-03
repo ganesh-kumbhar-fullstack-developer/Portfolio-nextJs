@@ -1,67 +1,66 @@
-import { Mail, Phone, MapPin, ArrowUpRight } from "lucide-react";
 import SectionHeading from "@/components/ui/SectionHeading.jsx";
 import Reveal from "@/components/ui/Reveal.jsx";
 import ContactForm from "@/components/forms/ContactForm.jsx";
+import CopyEmail from "@/components/ui/CopyEmail.jsx";
 import { profile, socials } from "@/data/portfolio";
 
 export default function Contact() {
-  const channels = [
-    { icon: Mail, label: "Email", value: profile.email, href: `mailto:${profile.email}` },
-    { icon: Phone, label: "Phone / WhatsApp", value: profile.phone, href: profile.phoneHref },
-    { icon: MapPin, label: "Location", value: `${profile.location} · open to remote` },
+  const entries = [
+    ["email", profile.email, `mailto:${profile.email}`],
+    ["phone", profile.phone, profile.phoneHref],
+    ["whatsapp", profile.phone, `https://wa.me/${profile.whatsapp}`],
+    ...socials.map((s) => [s.name.toLowerCase(), s.href.replace(/^https:\/\/(www\.)?/, "").replace(/\/$/, ""), s.href]),
+    ["location", `${profile.location.split(",")[0]}, IN · open to remote`],
   ];
 
   return (
     <section id="contact" className="section">
       <div className="container-page">
         <SectionHeading
-          eyebrow="Contact"
-          title="Let's build something reliable together"
-          description="Hiring for a backend or full-stack role, or have a system that needs to scale? Send me a message — I usually reply within a day."
+          index="06"
+          path="contact"
+          command="./send_message.sh"
+          title="Open a connection"
+          description="Hiring for a backend or full-stack role, or have a system that needs to scale? Ping me. I usually reply within a day."
         />
 
-        <div className="grid gap-8 lg:grid-cols-[1fr_1.3fr]">
-          <Reveal className="space-y-3">
-            {channels.map(({ icon: Icon, label, value, href }) => {
-              const body = (
-                <>
-                  <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-brand/10 text-brand">
-                    <Icon className="h-4 w-4" aria-hidden />
-                  </span>
-                  <span className="min-w-0">
-                    <span className="block text-xs text-subtle">{label}</span>
-                    <span className="block truncate text-sm text-ink">{value}</span>
-                  </span>
-                </>
-              );
-              return href ? (
-                <a key={label} href={href} className="card card-hover flex items-center gap-4 p-4">
-                  {body}
-                </a>
-              ) : (
-                <div key={label} className="card flex items-center gap-4 p-4">
-                  {body}
-                </div>
-              );
-            })}
-
-            <div className="flex flex-wrap gap-2 pt-3">
-              {socials.map((s) => (
-                <a
-                  key={s.name}
-                  href={s.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn btn-ghost py-2"
-                >
-                  {s.name}
-                  <ArrowUpRight className="h-4 w-4" aria-hidden />
-                </a>
+        <div className="grid gap-6 lg:grid-cols-12">
+          <Reveal className="window self-start lg:col-span-5">
+            <div className="window-bar">
+              <span className="dots" aria-hidden>
+                <i />
+                <i />
+                <i />
+              </span>
+              <span>contact.json</span>
+              <CopyEmail email={profile.email} />
+            </div>
+            <div className="p-5 font-mono text-[12.5px] leading-7 sm:text-[13px]">
+              <p className="text-muted">{"{"}</p>
+              {entries.map(([k, v, href], i) => (
+                <p key={k} className="truncate pl-4 sm:pl-6">
+                  <span className="text-cyan">&quot;{k}&quot;</span>
+                  <span className="text-muted">: </span>
+                  {href ? (
+                    <a
+                      href={href}
+                      target={href.startsWith("http") ? "_blank" : undefined}
+                      rel="noopener noreferrer"
+                      className="text-amber underline decoration-transparent underline-offset-4 transition-colors hover:text-accent hover:decoration-accent"
+                    >
+                      &quot;{v}&quot;
+                    </a>
+                  ) : (
+                    <span className="text-amber">&quot;{v}&quot;</span>
+                  )}
+                  {i < entries.length - 1 && <span className="text-muted">,</span>}
+                </p>
               ))}
+              <p className="text-muted">{"}"}</p>
             </div>
           </Reveal>
 
-          <Reveal delay={80}>
+          <Reveal delay={100} className="lg:col-span-7">
             <ContactForm />
           </Reveal>
         </div>

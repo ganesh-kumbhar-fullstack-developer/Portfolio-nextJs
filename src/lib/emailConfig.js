@@ -1,5 +1,15 @@
 import nodemailer from "nodemailer";
 
+const REQUIRED_ENV = ["EMAIL_USER", "GOOGLE_CLIENT_ID", "GOOGLE_CLIENT_SECRET", "GOOGLE_REFRESH_TOKEN"];
+
+// Names of the Gmail OAuth2 env vars that are not set (see .env.example)
+export function missingEmailConfig() {
+  return REQUIRED_ENV.filter((key) => !process.env[key]);
+}
+
+// Where portfolio enquiries are delivered — defaults to the sending account
+export const CONTACT_INBOX = () => process.env.CONTACT_TO || process.env.EMAIL_USER;
+
 export async function sendEmail({ to, subject, html, replyTo }) {
   try {
     // Safety check
