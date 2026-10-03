@@ -1,6 +1,0 @@
-Domain: https://gktechhub.com
-Author: Ganesh Kumbhar
-Email: ganeshhh2003@gmail.com
-Description: Portfolio and projects of MERN Stack Developer Ganesh Kumbhar.
-GitHub: https://github.com/Ganesh-D-Kumbhar
-LinkedIn: https://www.linkedin.com/in/ganesh-d-kumbhar

@@ -1,86 +1,83 @@
 import "./globals.css";
-import LayoutClient from "@/components/layout/LayoutClient.jsx";
+import Navbar from "@/components/navbar/Navbar.jsx";
+import Footer from "@/components/footer/Footer.jsx";
+import ToastProvider from "@/components/toaster/ToastProvider.jsx";
+import JsonLdSchemas from "@/components/seo/JsonLdSchemas.jsx";
+import { SITE_URL, profile } from "@/data/portfolio";
+
+const title = `${profile.name} – Software Engineer | Backend & Distributed Systems`;
+const description =
+  "Ganesh Kumbhar is a software engineer in Pune, India with ~2 years of experience building event-driven systems with Python, FastAPI, RabbitMQ, PostgreSQL and React — real-time alerting for 7,000+ intrusion panels, secure APIs and large-scale data processing.";
 
 export const metadata = {
-  metadataBase: new URL("https://gktechhub.com"),
-
+  metadataBase: new URL(SITE_URL),
   title: {
-    default:
-      "Ganesh Kumbhar – MERN Stack Developer | React.js, Next.js, Node.js Expert",
-    template: "%s | Ganesh Kumbhar",
+    default: title,
+    template: `%s | ${profile.name}`,
   },
-
-  description:
-    "Portfolio of Ganesh Kumbhar – MERN Stack Developer with 1.2+ years of experience in React.js, Next.js, Node.js, Express.js, MongoDB, REST APIs, micro-frontends, CMS, and scalable full-stack applications. Based in Pune, India. Open to full-time and freelance opportunities in 2024–2025.",
-
+  description,
   keywords: [
     "Ganesh Kumbhar",
-    "MERN Stack Developer",
-    "MERN Developer Pune",
+    "Software Engineer Pune",
+    "Backend Engineer",
+    "Distributed Systems",
+    "Python Developer",
+    "FastAPI Developer",
+    "RabbitMQ",
+    "PostgreSQL",
     "React Developer",
-    "Next.js Developer",
-    "Full Stack Developer",
-    "JavaScript Developer",
-    "Node.js Developer",
-    "Hire MERN Stack Developer",
-    "Frontend Developer",
-    "Backend Developer",
     "Full Stack Engineer",
-    "Portfolio Website 2025",
-    "React.js Projects",
-    "Next.js Projects",
-    "JavaScript Projects",
-    "Web Developer Pune",
-    "Software Developer Portfolio",
-    "Best MERN Developer 2025",
+    "Event-driven architecture",
+    "GK TechHub",
   ],
-
-  authors: [{ name: "Ganesh Kumbhar", url: "https://gktechhub.com" }],
-  creator: "Ganesh Kumbhar",
+  authors: [{ name: profile.name, url: SITE_URL }],
+  creator: profile.name,
   publisher: "GK TechHub",
-
-  alternates: {
-    canonical: "https://gktechhub.com",
-  },
-
+  alternates: { canonical: SITE_URL },
   openGraph: {
-    title:
-      "Ganesh Kumbhar – MERN Stack Developer | React.js & Next.js Portfolio",
-    description:
-      "Explore the full-stack portfolio of Ganesh Kumbhar, MERN Stack Developer specializing in React.js, Next.js, Node.js, and scalable enterprise applications.",
-    url: "https://gktechhub.com",
+    title,
+    description,
+    url: SITE_URL,
     siteName: "GK TechHub",
-    images: [
-      {
-        url: "/og-image.png",
-        width: 1200,
-        height: 630,
-        alt: "Ganesh Kumbhar Portfolio",
-      },
-    ],
     locale: "en_IN",
-    type: "website",
+    type: "profile",
   },
-
   twitter: {
     card: "summary_large_image",
-    title:
-      "Ganesh Kumbhar – MERN Stack Developer | React.js & Next.js Portfolio",
-    description:
-      "Full-stack developer portfolio showcasing MERN, React.js, Next.js, Node.js, MongoDB and real-world projects.",
-    images: ["/og-image.png"],
+    title,
+    description,
   },
+  icons: { icon: "/favicon.ico" },
+};
 
-  icons: {
-    icon: "/favicon.ico",
-  },
+export const viewport = {
+  themeColor: "#07060b",
+  colorScheme: "dark",
 };
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={`antialiased`}>
-        <LayoutClient>{children}</LayoutClient>
+    <html lang="en" className="dark" suppressHydrationWarning>
+      <head>
+        {/* Enables scroll-reveal styles only when JS runs, so content is never hidden without it */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html: "document.documentElement.classList.add('js')",
+          }}
+        />
+      </head>
+      <body>
+        <a
+          href="#main"
+          className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-lg focus:bg-brand-strong focus:px-4 focus:py-2 focus:text-white"
+        >
+          Skip to content
+        </a>
+        <JsonLdSchemas />
+        <ToastProvider />
+        <Navbar />
+        {children}
+        <Footer />
       </body>
     </html>
   );

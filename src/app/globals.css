@@ -1,387 +1,183 @@
 @import "tailwindcss";
 @custom-variant dark (&:where(.dark, .dark *));
-body {
-  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-    Ubuntu, "Helvetica Neue", sans-serif;
-}
-/* Base styles */
-@layer base {
-  body {
-    @apply bg-white dark:bg-[#0a0a0a] text-gray-900 dark:text-gray-100;
-    transition: background-color 0.3s ease, color 0.3s ease;
-  }
 
-  /* Smooth transitions for theme changes */
-  *,
-  *::before,
-  *::after {
-    transition: background-color 0.3s ease, color 0.3s ease,
-      border-color 0.3s ease, box-shadow 0.3s ease;
-  }
-}
-@layer utilities {
-  .animate-spin-slow {
-    animation: spin 20s linear infinite;
-  }
+/* ---------- Design tokens (usable as Tailwind utilities: bg-surface, text-muted, …) ---------- */
+@theme {
+  --color-brand: #8b6cff;
+  --color-brand-strong: #754ef9;
+  --color-brand-soft: #b9a6ff;
+  --color-bg: #07060b;
+  --color-surface: #0f0d16;
+  --color-surface-2: #16131f;
+  --color-line: #262236;
+  --color-ink: #ecebf3;
+  --color-muted: #a19db3;
+  --color-subtle: #6f6a84;
+  --color-ok: #34d399;
 
-  .animate-gradient-x {
-    animation: gradient-x 3s ease infinite;
-    background-size: 400% 400%;
-  }
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
 
-  .animate-float {
-    animation: float 6s ease-in-out infinite;
-  }
-
-  .animate-fade-in {
-    animation: fade-in 0.5s ease-in-out;
-  }
+  --animate-fade-up: fade-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@keyframes gradient-x {
-  0%,
-  100% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-}
-
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px) rotate(0deg);
-    opacity: 0.7;
-  }
-  50% {
-    transform: translateY(-20px) rotate(180deg);
-    opacity: 1;
-  }
-}
-
-@keyframes fade-in {
+@keyframes fade-up {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(16px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 
-/* Custom scrollbar */
+/* ---------- Base ---------- */
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    color-scheme: dark;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    @apply bg-bg text-ink font-sans antialiased;
+    /* Single, static page-wide glow instead of per-section animated backgrounds */
+    background-image:
+      radial-gradient(60rem 40rem at 85% -10%, rgb(117 78 249 / 0.14), transparent 60%),
+      radial-gradient(50rem 35rem at -10% 30%, rgb(117 78 249 / 0.08), transparent 60%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+  }
+
+  /* Anchor targets clear the fixed navbar */
+  section[id] {
+    scroll-margin-top: 5rem;
+  }
+
+  ::selection {
+    background: rgb(117 78 249 / 0.45);
+    color: #fff;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-brand);
+    outline-offset: 3px;
+    border-radius: 6px;
+  }
+}
+
+/* ---------- Components ---------- */
+@layer components {
+  .container-page {
+    @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
+  }
+
+  .section {
+    @apply py-20 sm:py-28;
+  }
+
+  .eyebrow {
+    @apply font-mono text-xs uppercase tracking-[0.2em] text-brand;
+  }
+
+  .section-title {
+    @apply mt-3 text-3xl font-semibold tracking-tight text-white text-balance sm:text-4xl;
+  }
+
+  .card {
+    @apply rounded-2xl border border-line bg-surface/70 transition-colors duration-200;
+  }
+
+  .card-hover {
+    @apply hover:border-brand/40 hover:bg-surface-2/80;
+  }
+
+  .chip {
+    @apply inline-flex items-center rounded-full border border-line bg-surface-2/60 px-3 py-1 text-xs text-muted;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-sm font-medium transition-[background-color,border-color,color,transform] duration-200 active:scale-[0.98] disabled:pointer-events-none disabled:opacity-60;
+  }
+
+  .btn-primary {
+    @apply bg-brand-strong text-white hover:bg-brand;
+  }
+
+  .btn-ghost {
+    @apply border border-line bg-white/3 text-ink hover:border-brand/50 hover:bg-white/6;
+  }
+
+  .link {
+    @apply text-brand-soft underline decoration-brand/40 underline-offset-4 transition-colors hover:text-white hover:decoration-brand;
+  }
+
+  .field {
+    @apply w-full rounded-xl border border-line bg-surface-2/70 px-4 py-3 text-sm text-ink placeholder:text-subtle transition-colors focus:border-brand focus:outline-none;
+  }
+
+  /* Scroll reveal — toggled by <Reveal>. Only hides content once JS has run
+     (layout adds .js to <html>), so crawlers and no-JS visitors see everything. */
+  .js .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.7s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.7s cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+  }
+
+  .js .reveal.is-visible {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* ---------- Scrollbar ---------- */
+html {
+  scrollbar-color: #3a3150 transparent;
+  scrollbar-width: thin;
+}
+
 ::-webkit-scrollbar {
   width: 8px;
 }
 
-::-webkit-scrollbar-track {
-  background: #000000;
-}
-
 ::-webkit-scrollbar-thumb {
-  background: linear-gradient(
-    to bottom,
-    rgb(117, 78, 249),
-    rgba(117, 78, 249, 0.8)
-  );
-  border-radius: 4px;
+  background: #3a3150;
+  border-radius: 8px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: linear-gradient(
-    to bottom,
-    rgba(117, 78, 249, 0.9),
-    rgb(117, 78, 249)
-  );
+  background: var(--color-brand-strong);
 }
 
-@keyframes fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-@keyframes slide-in-from-bottom-4 {
-  from {
-    transform: translateY(1rem);
-    opacity: 0;
-  }
-  to {
-    transform: translateY(0);
-    opacity: 1;
-  }
-}
-
-.animate-in {
-  animation-duration: 0.2s;
-  animation-fill-mode: both;
-}
-
-.fade-in {
-  animation-name: fade-in;
-}
-
-.slide-in-from-bottom-4 {
-  animation-name: slide-in-from-bottom-4;
-}
-
-/* Custom toast styles */
+/* ---------- Toasts ---------- */
 .Toastify__toast {
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1) !important;
-  z-index: 10000 !important;
+  border: 1px solid var(--color-line);
+  background: var(--color-surface-2) !important;
+  color: var(--color-ink) !important;
+  border-radius: 12px !important;
+  font-family: var(--font-sans);
 }
 
-.Toastify__toast--error {
-  background: white !important;
-  color: black !important;
-}
-
-.Toastify__toast--error .Toastify__toast-icon svg {
-  fill: red !important;
-}
-
-.Toastify__progress-bar--error {
-  background: #ff0000 !important;
-}
-
-/* SUCCESS Toast */
-.Toastify__toast--success {
-  background: white !important; /* Solid green background */
-  color: black !important;
-}
-
-.Toastify__toast--success .Toastify__toast-icon svg {
-  fill: rgb(1, 97, 1) !important; /* White icon */
-}
-
-.Toastify__progress-bar--success {
-  background: #00cc00 !important; /* Bright green progress bar */
-}
-
-/* ************************************ */
-
-/* Fade In Animation */
-@keyframes fade-in {
-  from {
-    opacity: 0;
+/* ---------- Accessibility: honour reduced-motion preferences ---------- */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
   }
-  to {
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .js .reveal {
     opacity: 1;
+    transform: none;
   }
-}
-
-.animate-fade-in {
-  animation: fade-in 0.8s ease-out forwards;
-}
-
-/* Slide In Animation */
-@keyframes slide-in {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-slide-in {
-  animation: slide-in 0.8s ease-out forwards;
-}
-
-/* Slide Up Animation */
-@keyframes slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(50px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.animate-slide-up {
-  animation: slide-up 0.6s ease-out forwards;
-}
-
-/* Scale In Animation */
-@keyframes scale-in {
-  from {
-    opacity: 0;
-    transform: scale(0.8);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-.animate-scale-in {
-  animation: scale-in 0.6s ease-out forwards;
-}
-
-/* Progress Bar Animation */
-@keyframes progress-bar {
-  from {
-    width: 0%;
-  }
-  to {
-    width: 90%;
-  }
-}
-
-.animate-progress-bar {
-  animation: progress-bar 1.5s ease-out forwards;
-}
-
-/* Expand Animation */
-@keyframes expand {
-  from {
-    width: 0;
-  }
-  to {
-    width: 8rem;
-  }
-}
-
-.animate-expand {
-  animation: expand 1s ease-out forwards;
-}
-
-/* Float Animation */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0px);
-  }
-  50% {
-    transform: translateY(-20px);
-  }
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.animate-float-delayed {
-  animation: float 3s ease-in-out infinite;
-  animation-delay: 1.5s;
-}
-
-/* Rotate 360 Animation */
-@keyframes rotate-360 {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-
-.hover\:rotate-360:hover {
-  animation: rotate-360 0.6s ease-in-out;
-}
-
-/* Pulse Animation (Enhanced) */
-@keyframes pulse-enhanced {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.8;
-    transform: scale(1.05);
-  }
-}
-
-.animate-pulse-enhanced {
-  animation: pulse-enhanced 2s ease-in-out infinite;
-}
-
-/* Bounce Animation */
-@keyframes bounce-gentle {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
-  50% {
-    transform: translateY(-10px);
-  }
-}
-
-.animate-bounce-gentle {
-  animation: bounce-gentle 1s ease-in-out infinite;
-}
-
-/* Glow Animation */
-@keyframes glow {
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(117, 78, 249, 0.3);
-  }
-  50% {
-    box-shadow: 0 0 30px rgba(117, 78, 249, 0.6);
-  }
-}
-
-.animate-glow {
-  animation: glow 2s ease-in-out infinite;
-}
-
-/* Shake Animation */
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0);
-  }
-  25% {
-    transform: translateX(-5px);
-  }
-  75% {
-    transform: translateX(5px);
-  }
-}
-
-.animate-shake {
-  animation: shake 0.5s ease-in-out;
-}
-
-/* Typing Animation */
-@keyframes typing {
-  from {
-    width: 0;
-  }
-  to {
-    width: 100%;
-  }
-}
-
-.animate-typing {
-  animation: typing 2s steps(20, end) forwards;
-}
-
-/* Gradient Animation */
-@keyframes gradient-shift {
-  0% {
-    background-position: 0% 50%;
-  }
-  50% {
-    background-position: 100% 50%;
-  }
-  100% {
-    background-position: 0% 50%;
-  }
-}
-
-.animate-gradient {
-  background-size: 200% 200%;
-  animation: gradient-shift 3s ease infinite;
 }

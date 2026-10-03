@@ -1,0 +1,16 @@
+# Ganesh Kumbhar – Software Engineer
+
+> Software engineer (~2 years) in Pune, India, focused on backend and distributed systems with Python, FastAPI, RabbitMQ, PostgreSQL and React.
+
+- Website: https://gktechhub.com
+- Email: ganeshhh2003@gmail.com
+- GitHub: https://github.com/Ganesh-D-Kumbhar
+- LinkedIn: https://www.linkedin.com/in/ganesh-d-kumbhar/
+- Resume: https://gktechhub.com/ganesh_kumbhar_fullstack_developer.pdf
+
+## Experience
+- Full Stack Software Engineer, Integrated Active Monitoring Pvt. Ltd. (June 2026 – present): event-driven alerting pipeline (RabbitMQ, WebSockets, PostgreSQL) for 7,000+ intrusion panels; consolidated 40+ repositories into a monorepo; MFA/OTP, RBAC, VAPT fixes, audit logging; multi-app licensing service; idempotent health-alert worker.
+- Full Stack Developer, SevenMentor Corporate Services (Feb 2025 – May 2026): 5+ production MERN apps (CMS, LMS, Billing, Placement) for 5,000+ users; JWT + RBAC; SSR performance gains of 30–40%.
+
+## Education
+- B.Tech, Electronics & Telecommunication Engineering, Karmayogi Institute of Technology, Pandharpur (2020–2024), CGPA 8.4/10.

@@ -1,204 +1,83 @@
-"use client";
-
-import { useState, useEffect, useRef, useCallback, memo } from "react";
-import {
-  Linkedin,
-  Github,
-  Instagram,
-  Mail,
-  ArrowRight,
-  Sparkles,
-  ArrowBigDown,
-  ArrowDown,
-} from "lucide-react";
-import { AnimatedBackground } from "@/components/skills/AnimatedBackground";
-import PopUpForm from "@/components/forms/PopUpForm";
-
-const roles = [
-  "MERN Stack Developer",
-  "React.js Developer",
-  "Next.js Developer",
-  "Full Stack Web Developer",
-  "Frontend Engineer",
-  "Performance-Focused UI Developer",
-  "React.js, Next.js, Node.js Expert"
-];
-
-// Memoized components to prevent unnecessary re-renders
-const HeroHeading = memo(() => (
-  <h3 className="text-5xl sm:text-6xl lg:text-7xl font-bold leading-tight tracking-tight">
-    <span className="block bg-gradient-to-r from-purple-200 via-purple-100 to-purple-300 bg-clip-text text-transparent">
-      Transforming Ideas
-    </span>
-    <span className="block bg-gradient-to-r from-purple-200 via-purple-100 to-purple-300 bg-clip-text text-transparent">
-      Into Fast,
-    </span>
-    <span className="block bg-gradient-to-r from-purple-400 via-purple-300 to-purple-500 bg-clip-text text-transparent">
-      Modern Digital Experiences
-    </span>
-  </h3>
-));
-HeroHeading.displayName = 'HeroHeading';
-
-const Subtitle = memo(() => (
-  <h1 className="text-white text-xl font-semibold">
-    Ganesh Kumbhar – MERN Stack Developer | React.js, Next.js, Node.js Expert
-  </h1>
-));
-Subtitle.displayName = 'Subtitle';
-
-const Description = memo(() => (
-  <p className="max-w-4xl mx-auto text-sm sm:text-base text-gray-400 leading-relaxed font-light">
-    Crafting{" "}
-    <span className="text-purple-300 font-medium">
-      performant, accessible, and beautiful interfaces
-    </span>{" "}
-    using React, Next.js, Node.js, and modern web technologies. I
-    specialize in building production-ready applications that users
-    love.
-  </p>
-));
-Description.displayName = 'Description';
-
-// Memoized CTA Buttons component
-const CTAButtons = memo(({ onDownloadClick, onViewProjectsClick }) => (
-  <div
-    className="flex flex-col sm:flex-row justify-center items-center gap-4 pt-4"
-    style={{ animationDelay: "0.2s" }}
-  >
-    <button
-      onClick={onDownloadClick}
-      className="group relative px-8 py-3.5 text-sm sm:text-base font-semibold text-white rounded-lg bg-purple-600 hover:bg-purple-700 transition-all duration-300 shadow-lg shadow-purple-500/25 hover:shadow-purple-500/40 hover:scale-105 flex items-center justify-between gap-2"
-    >
-      <span>Download Resume</span>
-      <ArrowDown className="absolute right-3 w-4 h-4 text-2xl font-bold group-hover:translate-x-1 transition-transform" />
-    </button>
-    <button
-      onClick={onViewProjectsClick}
-      className="px-8 py-3.5 text-sm sm:text-base font-semibold text-purple-200 rounded-lg border border-purple-500/40 bg-white/5 hover:bg-white/10 hover:border-purple-400/60 transition-all duration-300 backdrop-blur-sm"
-    >
-      View Projects
-    </button>
-  </div>
-));
-CTAButtons.displayName = 'CTAButtons';
-
-// Memoized rotating role component
-const RotatingRole = memo(({ role }) => (
-  <div className="h-2 flex items-center m-6">
-    <h2 className="text-3xl font-bold sm:text-5xl text-purple-300 transition-all duration-500 inline-block">
-      {role}
-    </h2>
-  </div>
-));
-RotatingRole.displayName = 'RotatingRole';
+import { ArrowRight, FileDown, MapPin } from "lucide-react";
+import { profile, heroStats, socials, RESUME_PATH } from "@/data/portfolio";
 
 export default function Home() {
-  const [currentRole, setCurrentRole] = useState(0);
-  const [isInView, setIsInView] = useState(false);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  
-  const sectionRef = useRef(null);
-  const intervalRef = useRef(null);
-
-  // Memoized handlers to prevent function recreation on each render
-  const handleDownloadClick = useCallback(() => {
-    setIsFormOpen(true);
-  }, []);
-
-  const handleViewProjectsClick = useCallback(() => {
-    const projectsSection = document.getElementById("projects");
-    if (projectsSection) {
-      projectsSection.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }, []);
-
-  const handleFormClose = useCallback(() => {
-    setIsFormOpen(false);
-  }, []);
-
-  // Intersection Observer setup
-  useEffect(() => {
-    const currentSection = sectionRef.current;
-    if (!currentSection) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setIsInView(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.2 }
-    );
-
-    observer.observe(currentSection);
-
-    return () => {
-      if (currentSection) {
-        observer.unobserve(currentSection);
-      }
-    };
-  }, []);
-
-  // Role rotation effect
-  useEffect(() => {
-    if (!isInView) return;
-
-    intervalRef.current = setInterval(() => {
-      setCurrentRole((prev) => (prev + 1) % roles.length);
-    }, 3000);
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [isInView]);
-
   return (
-    <section
-      id="home"
-      ref={sectionRef}
-      className="relative h-auto bg-gradient-to-b from-black via-[#0a0515] to-black overflow-hidden flex items-center"
-    >
-      <AnimatedBackground />
+    <section id="home" className="relative overflow-hidden pt-32 pb-20 sm:pt-40 sm:pb-28">
+      {/* Subtle grid, masked to fade out — static, no JS animation */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-0 -z-10 opacity-[0.07] mask-[radial-gradient(ellipse_at_top,black_30%,transparent_70%)]"
+        style={{
+          backgroundImage:
+            "linear-gradient(#8b6cff 1px, transparent 1px), linear-gradient(90deg, #8b6cff 1px, transparent 1px)",
+          backgroundSize: "56px 56px",
+        }}
+      />
 
-      <div className="container mx-auto px-4 sm:px-8 py-16 lg:py-24 relative z-10">
-        <div className="w-full max-w-7xl mx-auto">
-          {/* Hero Content */}
-          <div
-            className="space-y-8 text-center opacity-0 animate-fade-in"
-            style={{ animationDelay: "0.1s" }}
-          >
-            {/* Main Heading */}
-            <div className="space-y-6">
-              <HeroHeading />
+      <div className="container-page">
+        <div className="animate-fade-up">
+          <p className="inline-flex items-center gap-2 rounded-full border border-line bg-surface/70 px-3 py-1.5 text-xs text-muted">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-ok opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-ok" />
+            </span>
+            Software Engineer at {profile.currentCompany}
+          </p>
 
-              {/* Subtitle with Rotating Role */}
-              <div className="flex flex-col items-center gap-4">
-                <Subtitle />
-                <RotatingRole role={roles[currentRole]} />
-              </div>
-            </div>
+          <h1 className="mt-6 text-4xl font-semibold tracking-tight text-white text-balance sm:text-6xl lg:text-7xl">
+            Hi, I&apos;m {profile.name}.
+            <span className="mt-2 block bg-linear-to-r from-brand-soft via-brand to-brand-strong bg-clip-text text-transparent">
+              I build reliable backend systems.
+            </span>
+          </h1>
 
-            {/* Description */}
-            <Description />
+          <p className="mt-6 max-w-2xl text-base leading-relaxed text-muted sm:text-lg">
+            {profile.title} focused on <span className="text-ink">{profile.focus.toLowerCase()}</span> with{" "}
+            <span className="text-ink">{profile.stack}</span>. I build event-driven alerting pipelines, secure APIs
+            and large-scale data workflows that run in production.
+          </p>
 
-            {/* CTA Buttons */}
-            <CTAButtons 
-              onDownloadClick={handleDownloadClick}
-              onViewProjectsClick={handleViewProjectsClick}
-            />
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+            <a href="#work" className="btn btn-primary">
+              See my work
+              <ArrowRight className="h-4 w-4" aria-hidden />
+            </a>
+            <a href={RESUME_PATH} download className="btn btn-ghost">
+              <FileDown className="h-4 w-4" aria-hidden />
+              Download resume
+            </a>
+          </div>
+
+          <div className="mt-8 flex flex-wrap items-center gap-x-5 gap-y-2 text-sm text-subtle">
+            <span className="inline-flex items-center gap-1.5">
+              <MapPin className="h-4 w-4" aria-hidden />
+              {profile.location}
+            </span>
+            {socials.map((s) => (
+              <a key={s.name} href={s.href} target="_blank" rel="noopener noreferrer" className="hover:text-white">
+                {s.name} ↗
+              </a>
+            ))}
           </div>
         </div>
-      </div>
 
-      <PopUpForm
-        isOpen={isFormOpen}
-        onClose={handleFormClose}
-        isResume={true}
-      />
+        <dl className="mt-16 grid grid-cols-2 gap-px overflow-hidden rounded-2xl border border-line bg-line lg:grid-cols-4">
+          {heroStats.map((stat, i) => (
+            <div
+              key={stat.label}
+              className="animate-fade-up bg-surface p-5 sm:p-6"
+              style={{ animationDelay: `${150 + i * 80}ms` }}
+            >
+              <dt className="sr-only">{stat.label}</dt>
+              <dd>
+                <span className="block text-2xl font-semibold text-white tabular-nums sm:text-3xl">{stat.value}</span>
+                <span className="mt-1 block text-xs leading-snug text-muted sm:text-sm">{stat.label}</span>
+              </dd>
+            </div>
+          ))}
+        </dl>
+      </div>
     </section>
   );
 }

@@ -1,187 +1,122 @@
 "use client";
-import { useState, useEffect, useCallback } from "react";
-import { useRouter, usePathname } from "next/navigation";
+import { useEffect, useState } from "react";
+import Link from "next/link";
 import Image from "next/image";
-import { motion } from "framer-motion";
-import {
-  Menu,
-  X,
-  Home,
-  User,
-  Award,
-  FolderOpen,
-  Code,
-  Mail,
-  Briefcase,
-  GraduationCap,
-} from "lucide-react";
-import { useNavbar } from "@/context/NavbarContext.jsx";
+import { usePathname } from "next/navigation";
+import { Menu, X, FileDown } from "lucide-react";
+import { navItems, RESUME_PATH } from "@/data/portfolio";
 
-const navItems = [
-  { key: "home", label: "Home", icon: Home },
-  { key: "about", label: "About", icon: User },
-  { key: "experience", label: "Experience", icon: Briefcase },
-  { key: "education", label: "Education", icon: GraduationCap },
-  { key: "skills", label: "Skills", icon: Code },
-  { key: "certifications", label: "Certifications", icon: Award },
-  { key: "projects", label: "Projects", icon: FolderOpen },
-  { key: "contact", label: "Contact", icon: Mail },
-];
-
-const Navbar = () => {
-  const [isSticky, setIsSticky] = useState(false);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const router = useRouter();
+export default function Navbar() {
   const pathname = usePathname();
-  const { activeSection, sectionRefs, setTargetSection } = useNavbar();
+  const isHome = pathname === "/";
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+  const [active, setActive] = useState("");
 
-  const handleScroll = useCallback(() => {
-    setIsSticky(window.scrollY > 50);
+  // Elevated style once the page scrolls
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 8);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // Scroll-spy: highlight the section crossing the middle of the viewport
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, [handleScroll]);
+    if (!isHome) return;
+    const sections = navItems.map(({ id }) => document.getElementById(id)).filter(Boolean);
+    const io = new IntersectionObserver(
+      (entries) => {
+        for (const entry of entries) {
+          if (entry.isIntersecting) setActive(entry.target.id);
+        }
+      },
+      { rootMargin: "-45% 0px -50% 0px" },
+    );
+    sections.forEach((s) => io.observe(s));
+    return () => io.disconnect();
+  }, [isHome]);
 
-  const handleNavClick = useCallback(
-    (sectionKey) => {
-      // If we have section refs (on home page), use them to scroll
-      if (sectionRefs && sectionRefs[sectionKey]?.current) {
-        sectionRefs[sectionKey].current.scrollIntoView({
-          behavior: "smooth",
-          block: "start",
-        });
-        setMenuOpen(false);
-        return;
-      }
+  // Close the mobile menu on Escape
+  useEffect(() => {
+    if (!open) return;
+    const onKey = (e) => e.key === "Escape" && setOpen(false);
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [open]);
 
-      // If not on home page, set target section in context and navigate to home
-      if (pathname !== "/") {
-        setTargetSection(sectionKey);
-        router.push("/");
-        setMenuOpen(false);
-      } else {
-        // On home page but refs not ready, try again in a moment
-        setTimeout(() => {
-          if (sectionRefs && sectionRefs[sectionKey]?.current) {
-            sectionRefs[sectionKey].current.scrollIntoView({
-              behavior: "smooth",
-              block: "start",
-            });
-          }
-        }, 100);
-        setMenuOpen(false);
-      }
-    },
-    [sectionRefs, pathname, router, setTargetSection],
-  );
+  const close = () => setOpen(false);
 
   return (
     <header
-      className="header fixed top-0 left-0 right-0 z-50 transition-colors duration-300
-        bg-black/95
-        border-b border-purple-500/20
-        shadow-2xl shadow-purple-500/10"
+      className={`fixed inset-x-0 top-0 z-50 border-b transition-colors duration-300 ${
+        scrolled || open ? "border-line bg-bg/85 backdrop-blur-md" : "border-transparent bg-transparent"
+      }`}
     >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 lg:h-20">
-          {/* Logo */}
-          <div
-            onClick={() => handleNavClick("home")}
-            className="logo flex items-center space-x-2 cursor-pointer select-none"
-          >
-            <div className="font-bold text-xl">
-              <Image src="/logo2.png" width={200} height={100} alt="Logo" />
-            </div>
-          </div>
+      <div className="container-page flex h-16 items-center justify-between">
+        <Link href="/#home" onClick={close} className="flex items-center" aria-label="Ganesh Kumbhar – home">
+          <Image src="/logo2.png" width={124} height={40} alt="GK TechHub" priority className="h-9 w-auto" />
+        </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="navbar hidden lg:flex items-center space-x-1">
-            {navItems.map(({ key, label, icon: Icon }) => {
-              const isActive = activeSection === key;
-              return (
-                <button
-                  key={key}
-                  onClick={() => handleNavClick(key)}
-                  className={`relative flex items-center space-x-2 px-4 py-2 rounded-full cursor-pointer select-none transition-colors duration-300
-                    ${
-                      isActive
-                        ? "text-white border-b-2 border-purple-500"
-                        : "text-purple-300 hover:text-white"
-                    }`}
-                  type="button"
-                >
-                  <Icon className="w-4 h-4" />
-                  <span className="font-medium">{label}</span>
-                </button>
-              );
-            })}
-          </nav>
+        <nav aria-label="Primary" className="hidden items-center gap-1 md:flex">
+          {navItems.map(({ id, label }) => (
+            <Link
+              key={id}
+              href={`/#${id}`}
+              aria-current={active === id ? "true" : undefined}
+              className={`rounded-lg px-3 py-2 text-sm transition-colors ${
+                active === id ? "text-white" : "text-muted hover:text-white"
+              }`}
+            >
+              {label}
+              <span
+                aria-hidden
+                className={`mx-auto mt-0.5 block h-px bg-brand transition-all duration-300 ${active === id ? "w-full" : "w-0"}`}
+              />
+            </Link>
+          ))}
+          <a href={RESUME_PATH} download className="btn btn-primary ml-3 py-2">
+            <FileDown className="h-4 w-4" aria-hidden />
+            Resume
+          </a>
+        </nav>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setMenuOpen((open) => !open)}
-            className="lg:hidden p-3 rounded-full transition-colors duration-300
-              bg-gradient-to-r from-purple-600 to-purple-500
-              border border-purple-700"
-            type="button"
-            aria-expanded={menuOpen}
-            aria-label="Toggle menu"
-          >
-            {menuOpen ? (
-              <X className="w-6 h-6 text-white" />
-            ) : (
-              <Menu className="w-6 h-6 text-white" />
-            )}
-          </button>
-        </div>
+        <button
+          type="button"
+          onClick={() => setOpen((o) => !o)}
+          className="rounded-lg p-2 text-ink hover:bg-white/5 md:hidden"
+          aria-expanded={open}
+          aria-controls="mobile-nav"
+          aria-label={open ? "Close menu" : "Open menu"}
+        >
+          {open ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+        </button>
       </div>
 
-      {/* Mobile Navigation */}
-      {menuOpen && (
-        <div
-          className="lg:hidden backdrop-blur-xl
-            bg-black/95
-            border-t border-purple-500/20"
-        >
-          <div className="px-4 py-6 space-y-2">
-            {navItems.map(({ key, label, icon: Icon }) => {
-              const isActive = activeSection === key;
-              return (
-                <button
-                  key={key}
-                  onClick={() => handleNavClick(key)}
-                  className={`w-full flex items-center space-x-3 px-4 py-3 rounded-xl select-none transition-colors duration-300
-                    ${
-                      isActive
-                        ? "text-white bg-gradient-to-r from-purple-600 to-purple-500 shadow-lg shadow-purple-500/25"
-                        : "text-purple-300 hover:text-white hover:bg-purple-700/20"
-                    }`}
-                  type="button"
+      {open && (
+        <nav id="mobile-nav" aria-label="Mobile" className="container-page border-t border-line pb-6 pt-2 md:hidden">
+          <ul className="flex flex-col">
+            {navItems.map(({ id, label }) => (
+              <li key={id}>
+                <Link
+                  href={`/#${id}`}
+                  onClick={close}
+                  className={`flex items-center justify-between rounded-lg px-3 py-3 text-base ${
+                    active === id ? "bg-white/5 text-white" : "text-muted"
+                  }`}
                 >
-                  <Icon className="w-5 h-5" />
-                  <span className="font-medium">{label}</span>
-                  {isActive && (
-                    <div className="ml-auto w-2 h-2 bg-white rounded-full" />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-        </div>
+                  {label}
+                  {active === id && <span className="h-1.5 w-1.5 rounded-full bg-brand" aria-hidden />}
+                </Link>
+              </li>
+            ))}
+          </ul>
+          <a href={RESUME_PATH} download onClick={close} className="btn btn-primary mt-4 w-full">
+            <FileDown className="h-4 w-4" aria-hidden />
+            Download resume
+          </a>
+        </nav>
       )}
-
-      {/* Gradient Border Effect */}
-      <motion.div
-        className="absolute bottom-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-purple-500 to-transparent opacity-50"
-        initial={false}
-        animate={{ scaleX: isSticky ? 1 : 0 }}
-        transition={{ duration: 0.3 }}
-        style={{ transformOrigin: "center" }}
-      />
     </header>
   );
-};
-
-export default Navbar;
+}

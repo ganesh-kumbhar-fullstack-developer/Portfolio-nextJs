@@ -1,5 +1,3 @@
-"use client";
-
 import { ArrowLeft, FileText } from "lucide-react";
 import Link from "next/link";
 
@@ -118,26 +116,11 @@ export default function TermsOfService() {
   ];
 
   return (
-    <main className="relative min-h-screen bg-black text-white overflow-hidden">
-      {/* Background Decorations */}
-      <div
-        className="absolute top-0 -left-80 w-[900px] h-[900px] rounded-full opacity-20 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle, rgb(117, 78, 249) 0%, transparent 70%)",
-        }}
-      />
-      <div
-        className="absolute bottom-0 -right-80 w-[900px] h-[900px] rounded-full opacity-20 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(circle, rgb(117, 78, 249) 0%, transparent 70%)",
-        }}
-      />
+    <main id="main" className="relative min-h-screen pt-16 text-white">
 
       <div className="relative z-10">
         {/* Header */}
-        <div className="sticky top-0 bg-black/80 backdrop-blur-md z-20 border-b border-purple-500/20">
+        <div className="sticky top-16 z-20 border-b border-line bg-bg/85 backdrop-blur-md">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center justify-between">
             <Link
               href="/"
@@ -158,16 +141,12 @@ export default function TermsOfService() {
                 <FileText className="w-8 h-8 text-purple-400" />
               </div>
             </div>
-            <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-gradient-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
+            <h1 className="text-4xl sm:text-5xl font-bold mb-4 bg-linear-to-r from-purple-400 to-purple-600 bg-clip-text text-transparent">
               Terms of Service
             </h1>
             <p className="text-gray-400">
               Last Updated:{" "}
-              {new Date().toLocaleDateString("en-US", {
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
+              October 3, 2026
             </p>
           </div>
 

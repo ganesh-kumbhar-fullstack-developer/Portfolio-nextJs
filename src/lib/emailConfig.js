@@ -1,6 +1,6 @@
 import nodemailer from "nodemailer";
 
-export async function sendEmail({ to, subject, html }) {
+export async function sendEmail({ to, subject, html, replyTo }) {
   try {
     // Safety check
     if (!to) {
@@ -21,6 +21,7 @@ export async function sendEmail({ to, subject, html }) {
     const info = await transporter.sendMail({
       from: `"Ganesh Kumbhar" <${process.env.EMAIL_USER}>`,
       to,
+      replyTo,
       subject,
       html,
     });

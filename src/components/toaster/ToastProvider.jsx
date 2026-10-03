@@ -1,25 +1,18 @@
 "use client";
-import { ToastContainer } from "react-toastify"
+import { ToastContainer } from "react-toastify";
 
 const ToastProvider = () => {
   return (
     <ToastContainer
       position="top-right"
-      autoClose={4000}
-      hideProgressBar={false}
-      newestOnTop={false}
+      autoClose={5000}
       closeOnClick
-      rtl={false}
       pauseOnFocusLoss
-      draggable
       pauseOnHover
-      theme="light"
-      style={{
-        top: "80px", // Position below navbar
-        zIndex: "909090"
-      }}
+      theme="dark"
+      style={{ top: "72px" }}
     />
-  )
-}
+  );
+};
 
-export default ToastProvider
+export default ToastProvider;
