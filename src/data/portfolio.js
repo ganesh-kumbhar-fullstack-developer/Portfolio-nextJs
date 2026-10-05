@@ -20,8 +20,8 @@ export const profile = {
 };
 
 export const socials = [
-  { name: "GitHub", href: "https://github.com/Ganesh-D-Kumbhar" },
-  { name: "LinkedIn", href: "https://www.linkedin.com/in/ganesh-d-kumbhar/" },
+  { name: "GitHub", href: "https://github.com/ganesh-kumbhar-fullstack-developer" },
+  { name: "LinkedIn", href: "https://www.linkedin.com/in/ganesh-kumbhar-fullstack-developer" },
   { name: "HackerRank", href: "https://www.hackerrank.com/profile/ganeshhh2003" },
 ];
 
@@ -179,7 +179,7 @@ export const sideProjects = [
     image: "/images/dream-homes.png",
     stack: ["React", "Node.js", "Express", "MongoDB", "Tailwind CSS"],
     liveUrl: "https://dream-homes.gktechhub.com",
-    githubUrl: "https://github.com/Ganesh-D-Kumbhar/Dream-Homes",
+    githubUrl: "https://github.com/ganesh-kumbhar-fullstack-developer/Dream-Homes",
   },
 ];
 

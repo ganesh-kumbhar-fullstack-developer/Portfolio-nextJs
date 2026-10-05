@@ -4,8 +4,8 @@
 
 - Website: https://gktechhub.com
 - Email: ganeshhh2003@gmail.com
-- GitHub: https://github.com/Ganesh-D-Kumbhar
-- LinkedIn: https://www.linkedin.com/in/ganesh-d-kumbhar/
+- GitHub: https://github.com/ganesh-kumbhar-fullstack-developer
+- LinkedIn: https://www.linkedin.com/in/ganesh-kumbhar-fullstack-developer
 - Resume: https://gktechhub.com/ganesh_kumbhar_fullstack_developer.pdf
 
 ## Experience
