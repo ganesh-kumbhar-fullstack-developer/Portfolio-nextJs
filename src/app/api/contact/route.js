@@ -1,15 +1,7 @@
 import { sendEmail, missingEmailConfig, CONTACT_INBOX } from "@/lib/emailConfig";
+import { adminEnquiryEmail, visitorConfirmationEmail } from "@/lib/emailTemplates";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-// User input is interpolated into HTML emails — escape it to prevent HTML injection.
-const escapeHtml = (value = "") =>
-  String(value)
-    .replace(/&/g, "&amp;")
-    .replace(/</g, "&lt;")
-    .replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;")
-    .replace(/'/g, "&#39;");
 
 export async function POST(req) {
   try {
@@ -40,63 +32,17 @@ export async function POST(req) {
       );
     }
 
-    const timestamp = new Date().toLocaleString("en-IN", { timeZone: "Asia/Kolkata" });
-    const safeName = escapeHtml(fullName);
-
-    const formData = {
-      Name: safeName,
-      Email: escapeHtml(email),
-      Subject: escapeHtml(subject) || "—",
-      Message: escapeHtml(msg).replace(/\n/g, "<br/>"),
-    };
-
-    const adminEmailHTML = `
-      <div style="font-family: Arial, sans-serif; background:#f4f6f8; padding:20px;">
-        <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; overflow:hidden;">
-          <div style="background:#0f172a; color:#ffffff; padding:15px;">
-            <h2 style="margin:0;">New portfolio enquiry</h2>
-          </div>
-          <div style="padding:20px;">
-            <table style="width:100%; border-collapse:collapse;">
-              ${Object.entries(formData)
-                .map(
-                  ([key, value]) => `
-                  <tr>
-                    <td style="padding:10px; border:1px solid #ddd; font-weight:bold; background:#f9fafb; width:110px;">${key}</td>
-                    <td style="padding:10px; border:1px solid #ddd;">${value}</td>
-                  </tr>`,
-                )
-                .join("")}
-            </table>
-            <p style="margin-top:20px; font-size:12px; color:#666;">Received on: ${timestamp} IST</p>
-          </div>
-        </div>
-      </div>
-    `;
-
-    const userEmailHTML = `
-      <div style="font-family: Arial, sans-serif; background:#f4f6f8; padding:20px;">
-        <div style="max-width:600px; margin:auto; background:#ffffff; border-radius:8px; overflow:hidden;">
-          <div style="background:#754ef9; color:#ffffff; padding:20px;">
-            <h2 style="margin:0;">Thanks for reaching out</h2>
-          </div>
-          <div style="padding:20px; line-height:1.6;">
-            <p>Hi ${safeName},</p>
-            <p>Thank you for your message through my portfolio. I've received it and will get back to you shortly.</p>
-            <p style="margin-top:30px;">Best regards,<br/><strong>Ganesh Kumbhar</strong><br/>Software Engineer · gktechhub.com</p>
-          </div>
-          <div style="background:#f1f5f9; padding:10px; font-size:12px; color:#666; text-align:center;">
-            This is an automated response.
-          </div>
-        </div>
-      </div>
-    `;
+    const receivedAt = new Date().toLocaleString("en-IN", {
+      timeZone: "Asia/Kolkata",
+      dateStyle: "medium",
+      timeStyle: "short",
+    });
 
     await sendEmail({
       to: CONTACT_INBOX(),
       replyTo: email,
       subject: `Portfolio enquiry from ${fullName}${subject ? ` – ${subject}` : ""}`.slice(0, 150),
-      html: adminEmailHTML,
+      html: adminEnquiryEmail({ fullName, email, subject, msg, receivedAt }),
     });
 
     // The enquiry is already delivered — a failed auto-reply shouldn't report failure to the visitor
@@ -104,7 +50,7 @@ export async function POST(req) {
       await sendEmail({
         to: email,
         subject: "Thanks for getting in touch – Ganesh Kumbhar",
-        html: userEmailHTML,
+        html: visitorConfirmationEmail({ fullName, subject, msg }),
       });
     } catch (error) {
       console.error("Contact API: auto-reply failed:", error);
