@@ -1,4 +1,4 @@
-import { sendEmail } from "@/lib/emailConfig";
+import { sendEmail, missingEmailConfig, CONTACT_INBOX } from "@/lib/emailConfig";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -93,17 +93,22 @@ export async function POST(req) {
     `;
 
     await sendEmail({
-      to: process.env.EMAIL_USER,
+      to: CONTACT_INBOX(),
       replyTo: email,
       subject: `Portfolio enquiry from ${fullName}${subject ? ` – ${subject}` : ""}`.slice(0, 150),
       html: adminEmailHTML,
     });
 
-    await sendEmail({
-      to: email,
-      subject: "Thanks for getting in touch – Ganesh Kumbhar",
-      html: userEmailHTML,
-    });
+    // The enquiry is already delivered — a failed auto-reply shouldn't report failure to the visitor
+    try {
+      await sendEmail({
+        to: email,
+        subject: "Thanks for getting in touch – Ganesh Kumbhar",
+        html: userEmailHTML,
+      });
+    } catch (error) {
+      console.error("Contact API: auto-reply failed:", error);
+    }
 
     return Response.json({ message: "Message sent" });
   } catch (error) {
